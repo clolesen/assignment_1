@@ -76,7 +76,10 @@ setnames(data_demo, "Visit", "VISIT")
 Tip: There is a package called stringr, which will be very handy for you also in future assignments. We will return to this package later, but for now use the str_extract () to extract only the number from the variable Visit in each data set. Tip: type ?str_extract() after loading the library, for examples of how to use it.
 
 ```{r}
+library(stringr)
 
+data_LU$VISIT = str_extract(data_LU$VISIT, "\\d")
+data_token$VISIT = str_extract(data_token$VISIT, "\\d")
 
 ```
 
@@ -92,7 +95,9 @@ Tip: You will have to do identical work for both data sets, so to save time on t
 
 
 ```{r}
-
+data_demo$SUBJ = gsub("\\.", "", data_demo$SUBJ)
+data_LU$SUBJ = gsub("\\.", "", data_LU$SUBJ)
+data_token$SUBJ = gsub("\\.", "", data_token$SUBJ)
 ```
 
 2d. Now that the nitty gritty details of the different data sets are fixed, we want to make a subset of each data set only containig the variables that we wish to use in the final data set.
