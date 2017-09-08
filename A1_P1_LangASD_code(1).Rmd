@@ -115,8 +115,15 @@ The variables we need are: Child.ID, Visit, Ethnicity, Diagnosis, Gender, Age, A
 It would be smart to rename the MullenRaw and ExpressiveLangRaw into something you can remember (i.e. nonVerbalIQ, verbalIQ)
 
 ```{r}
+library(dplyr)
+subdata_demo = select(data_demo, SUBJ, VISIT, Ethnicity, Diagnosis, Gender, Age, ADOS,  MullenRaw, ExpressiveLangRaw)
 
+subdata_LU = select(data_LU, SUBJ, VISIT, MOT_MLU, MOT_LUstd, CHI_MLU, CHI_LUstd)
 
+subdata_token = select(data_token, SUBJ, VISIT, types_MOT, types_CHI, tokens_MOT, tokens_CHI)
+
+setnames(subdata_demo,"MullenRaw", "nonVerbalIQ")
+setnames(subdata_demo,"ExpressiveLangRaw", "verbalIQ")
 ```
 
 2e. Finally we are ready to merge all the data sets into just one. 
@@ -126,7 +133,8 @@ Tip: Merge only works for two data frames at the time.
 Tip: Check the number of observations in the datasets before and after merging. What is going on?
 
 ```{r}
-
+temp_merge = merge(subdata_demo, subdata_LU, by=c("SUBJ", "VISIT"))
+allData = merge(temp_merge, subdata_token, by=c("SUBJ", "VISIT"))
 ```
 
 Are we done yet?
@@ -140,7 +148,13 @@ Tip: the final dataset should have as many rows as the the old one.
 
 
 ```{r}
-
+temp_subset = subset(allData,VISIT==1, select = c("SUBJ", "ADOS", "nonVerbalIQ", "verbalIQ"))
+temp_subset$ID = 1:nrow(temp_subset)
+allData$ADOS = NULL
+allData$nonVerbalIQ = NULL
+allData$verbalIQ = NULL
+allData = merge(temp_subset, allData, by="SUBJ")
+allData$SUBJ = NULL
 ```
 
 Now, we are almost ready to actually start working with the data. However, here are some additional finishing touches:
@@ -154,8 +168,13 @@ Tip: as.numeric() might be a useful function, but not alone.
 Tip: Google "how to rename levels in R".
 
 ```{r}
+#first part was done above
 
+allData$VISIT = as.numeric(allData$VISIT)
 
+library(plyr)
+allData$Gender = mapvalues(allData$Gender, from = c("1", "2"), to = c("M", "F"))
+allData$Diagnosis = mapvalues(allData$Diagnosis, from = c("A", "B"), to = c("ASD", "TD"))
 ```
 
 
@@ -178,7 +197,6 @@ List all kids who:
 3. have not completed all trials. Tip: Use pipes to solve this
 
 ```{r}
-
 
 ```
 
