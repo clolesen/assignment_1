@@ -181,7 +181,7 @@ allData$Diagnosis = mapvalues(allData$Diagnosis, from = c("A", "B"), to = c("ASD
 Save the data set using into a csv file. Hint: look into write.csv()
 
 ```{r}
-
+write.csv(allData, file = "MergedData.csv")
 ```
 
 
