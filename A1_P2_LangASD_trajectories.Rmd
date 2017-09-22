@@ -78,7 +78,7 @@ Load necessary libraries : what will you need?
 - e.g. mixed effects models
 
 ```{r Load Libraries}
-
+library(tidyverse)
 ```
 
 ### Define your working directory and load the data
@@ -107,6 +107,8 @@ Describe the characteristics of the two groups of participants and whether the t
 
 ```{r}
 
+ggplot(Data) +
+  geom_boxplot(aes(y = Data$types_CHI[Data$Diagnosis=="TD"], x = as.factor(Data$VISIT[Data$Diagnosis=="TD"])))
 ```
 
 [REPORT THE RESULTS]

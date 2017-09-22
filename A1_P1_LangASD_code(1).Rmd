@@ -197,7 +197,19 @@ List all kids who:
 3. have not completed all trials. Tip: Use pipes to solve this
 
 ```{r}
+library(tidyverse)
+filter1 = allData %>%
+  group_by(ID) %>%
+  summarise(visitMLU = mean(CHI_MLU, na.rm = TRUE)) %>%
+  filter(visitMLU > 2.7)
 
+filter2 = filter(allData, CHI_MLU < 1.5, VISIT == 1)
+
+filter3 = allData %>%
+  group_by(ID) %>%
+  summarise(visitSUM = sum(VISIT)) %>%
+  filter(visitSUM != 21)
+  
 ```
 
 
@@ -207,7 +219,13 @@ USING ARRANGE
 2. Sort kids to find the kid who produced the least amount of words on the 1st visit.
 
 ```{r}
+Arr1 = allData %>%
+  filter(VISIT == 6) %>%
+  arrange(desc(tokens_CHI))
 
+Arr2 = allData %>%
+  filter(VISIT == 1) %>%
+  arrange(tokens_CHI)
 
 ```
 
@@ -217,6 +235,11 @@ USING SELECT
 2. What happens if you include the name of a variable multiple times in a select() call?
 
 ```{r}
+sel1 = allData %>%
+  filter(Diagnosis == "ASD") %>%
+  select(ID, Diagnosis, contains("MLU"), contains("token"))
+
+sel2 = select(allData, ID, VISIT, ID, VISIT)
 
 ```
 
@@ -227,6 +250,17 @@ USING MUTATE, SUMMARISE and PIPES
 3. The solution to task above enables us to assess the average amount of words produced by each child. Why don't we just use these average values to describe the language production of the children? What is the advantage of keeping all the data?
 
 ```{r}
+MSP1 = allData %>%
+  group_by(VISIT) %>%
+  summarise(visit_mean = mean(tokens_CHI)) %>%
+  merge(allData, by = "VISIT") %>%
+  arrange(ID)
 
+MSP2 = allData %>%
+  group_by(ID) %>%
+  summarise(child_mean = mean(tokens_CHI)) %>%
+  merge(MSP1, by = "ID")
+
+#MSP3 - we want the data so that we can look at the development over time.
 
 ```
