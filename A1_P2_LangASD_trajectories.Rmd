@@ -78,7 +78,17 @@ Load necessary libraries : what will you need?
 - e.g. mixed effects models
 
 ```{r Load Libraries}
+library(data.table)
+library(ggplot2)
+library(stringr)
 library(tidyverse)
+library(zoo)
+library(plyr)
+library(dplyr)
+library(lmerTest)
+library(lme4)
+library(MuMIn)
+
 ```
 
 ### Define your working directory and load the data
@@ -106,9 +116,27 @@ Make sure the variables are in the right format.
 Describe the characteristics of the two groups of participants and whether the two groups are well matched.
 
 ```{r}
+#checking the format of the variables
+sapply(Data, class)
 
+#boxplots showing that ASD and TD kids are similar on week 1, but TD kids develop more overall
 ggplot(Data) +
-  geom_boxplot(aes(y = Data$types_CHI[Data$Diagnosis=="TD"], x = as.factor(Data$VISIT[Data$Diagnosis=="TD"])))
+  geom_boxplot(aes(y = types_CHI, x = Diagnosis)) +
+  facet_wrap(~ VISIT)
+ggplot(Data) +
+  geom_boxplot(aes(y = tokens_CHI, x = Diagnosis)) +
+  facet_wrap(~ VISIT)
+ggplot(Data) +
+  geom_boxplot(aes(y = CHI_MLU, x = Diagnosis)) +
+  facet_wrap(~ VISIT)
+
+#Boxplot of IQ levels. They show that kids with ASD differ alot more on verbal IQ but for non verbal IQ the two groups are similar.
+ggplot(Data) +
+  geom_boxplot(aes(y = verbalIQ, x = Diagnosis))
+ggplot(Data) +
+  geom_boxplot(aes(y = nonVerbalIQ, x = Diagnosis))
+
+
 ```
 
 [REPORT THE RESULTS]
@@ -124,13 +152,15 @@ Remember to plot the data first and then to run a statistical test.
 - Which variable(s) should be included as random factors?
 
 ```{r}
-
+m1 = lmer(CHI_MLU ~ Diagnosis + Gender + VISIT + (1 + ID|VISIT),Data)
+summary(m1)
 ```
 
 How would you evaluate whether the model is a good model?
 
 ```{r}
-
+m1_null = lmer(CHI_MLU ~ Diagnosis + (1 + ID|VISIT),Data)
+anova(m1,m1_null)
 ```
 
 Not too good, right? Let's check whether a growth curve model is better.
